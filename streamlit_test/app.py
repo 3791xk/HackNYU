@@ -33,7 +33,7 @@ st.set_page_config(
 # Add logo and title in a horizontal layout
 col1, col2 = st.columns([1, 4])
 with col1:
-    st.image("assets/LogoDesign.svg", width=100)
+    st.image("assets/MapTogetherLogoDesign.svg", width=100)
 with col2:
     st.title("Find Places Between Locations")
     st.markdown("Explore places and get directions from both starting points")
@@ -135,7 +135,7 @@ if (st.button("Search Places") or search_type) and location1 and location2 and l
             &origin={lat1},{lng1}
             &destination={place_lat},{place_lng}
             &waypoints={lat2},{lng2}
-            &mode=driving">
+            &mode=walking">
             </iframe>
             """
             st.components.v1.html(map_html, height=400)
