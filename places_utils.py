@@ -41,8 +41,11 @@ def get_walking_times(place1, place2, dest, api_key, mode="walking"):
         if response.status_code == 200:
             data = response.json()
             if data['status'] == 'OK':
-                times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
-                walking_times.append(sum(times))
+                try:
+                    times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
+                    walking_times.append(sum(times))
+                except:
+                    walking_times.append(float('inf'))
     return walking_times if len(walking_times) == 2 else [float('inf'), float('inf')]
 
 def calculate_total_distance(place1, place2, dest, api_key, mode="walking"):
