@@ -1,10 +1,6 @@
 import streamlit as st
 import requests
 from config import GOOGLE_MAPS_API_KEY
-import json
-import urllib.parse
-from math import sqrt, pow
-import os
 from streamlit_searchbox import st_searchbox
 from places_utils import (
     get_location_coordinates, find_midpoint,

@@ -1,5 +1,4 @@
 import requests
-from math import sqrt, pow
 
 
 
