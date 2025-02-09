@@ -74,3 +74,17 @@ def filter_places(places_with_distance):
     disparity = lambda x: abs(x[2][0] - x[2][1])
     percent_of_total = lambda x: abs(0.5-(x[2][0] / sum(x[2])))
     return [place + (place[1]*(1+((1-percent_of_total(place))/2)),) for place in places_with_distance if disparity(place) < 15 or percent_of_total(place) < 0.2]
+
+def get_place_address(place_id, api_key):
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?place_id={place_id}&key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data['status'] == 'OK':
+            full_address = data['results'][0]['formatted_address']
+            # Cut off after the city/town
+            parts = full_address.split(',')
+            if len(parts) >= 2:
+                return ','.join(parts[:2]).strip()
+            return full_address
+    return ''
