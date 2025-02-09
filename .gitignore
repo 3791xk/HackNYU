@@ -74,7 +74,7 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 
-*.env
+*streamlit_test\.env
 
 # Android related
 **/android/**/gradle-wrapper.jar
