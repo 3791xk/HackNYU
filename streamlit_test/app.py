@@ -26,9 +26,13 @@ st.set_page_config(
     layout="wide"
 )
 
-# Title and description
-st.title("Find Places Between Locations")
-st.markdown("Explore places and get directions from both starting points")
+# Add logo and title in a horizontal layout
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("assets/LogoDesign.svg", width=100)
+with col2:
+    st.title("Find Places Between Locations")
+    st.markdown("Explore places and get directions from both starting points")
 
 def get_place_suggestions(query):
     if len(query.strip()) < 2:  # Only search after 2 characters
