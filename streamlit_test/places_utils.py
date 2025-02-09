@@ -15,7 +15,7 @@ def find_midpoint(lat1, lng1, lat2, lng2):
     return (lat1 + lat2) / 2, (lng1 + lng2) / 2
 
 def search_places(lat, lng, query, api_key):
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=2000&keyword={query}&key={api_key}"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=10000&keyword={query}&key={api_key}"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json().get('results', [])
@@ -68,10 +68,10 @@ def sort_places(location1, location2, places, api_key, mode="walking"):
     filtered_places = filter_places(places_with_distance)
     if len(filtered_places) == 0:
         return sorted(places_with_distance, key=lambda x: x[1])[:5]
-    sorted_places_with_distance = sorted(filtered_places, key=lambda x: x[1])[:10]
+    sorted_places_with_distance = sorted(filtered_places, key=lambda x: x[3])[:10]
     return sorted_places_with_distance
 
 def filter_places(places_with_distance):
     disparity = lambda x: abs(x[2][0] - x[2][1])
-    percent_of_total = lambda x: x[2][0] / sum(x[2])
-    return [place for place in places_with_distance if disparity(place) < 20 or (percent_of_total(place) > 0.3 and percent_of_total(place) < 0.7) ]
+    percent_of_total = lambda x: abs(0.5-(x[2][0] / sum(x[2])))
+    return [place + (place[1]*(1+((1-percent_of_total(place))/2)),) for place in places_with_distance if disparity(place) < 15 or percent_of_total(place) < 0.2]
