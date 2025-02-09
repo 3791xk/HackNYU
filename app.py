@@ -43,6 +43,15 @@ logo = 'assets/LogoDesign.png'
 # Set page config
 st.set_page_config(page_title='MapTogether', page_icon = logo, layout = 'wide')
 
+
+st.markdown("""
+    <style>
+        /* This will hide the warning about missing source maps */
+        .element-container:has(div.stAlert) {
+            display: none;
+        }
+    </style>
+""", unsafe_allow_html=True)
 # Add logo and title in a horizontal layout
 col1, col2 = st.columns([1, 9])
 with col1:
