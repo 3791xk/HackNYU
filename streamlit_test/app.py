@@ -4,6 +4,10 @@ from config import GOOGLE_MAPS_API_KEY
 import json
 import urllib.parse
 
+from streamlit_searchbox import st_searchbox
+
+
+
 # Initialize session state for locations
 if 'location1' not in st.session_state:
     st.session_state.location1 = {'input': '', 'place_id': None, 'description': ''}
@@ -35,7 +39,7 @@ with col2:
     st.markdown("Explore places and get directions from both starting points")
 
 def get_place_suggestions(query):
-    if len(query.strip()) < 2:  # Only search after 2 characters
+    if len(query.strip()) < 3:
         return []
     url = f"https://maps.googleapis.com/maps/api/place/autocomplete/json?input={urllib.parse.quote(query)}&key={GOOGLE_MAPS_API_KEY}"
     response = requests.get(url)
@@ -69,29 +73,38 @@ def search_places(lat, lng, query):
 def get_gmaps_url(origin_lat, origin_lng, dest_lat, dest_lng):
     return f"https://www.google.com/maps/dir/?api=1&origin={origin_lat},{origin_lng}&destination={dest_lat},{dest_lng}"
 
+# pass search function and other options as needed
+
+#st.write(f"Selected value: {selected_value}")
+
+
 # Input for locations and search type
 col1, col2, col3 = st.columns([2, 2, 1])
 
 with col1:
-    location1_input = st.text_input("Enter first location:", key="loc1_input")
-    location1 = None
-    suggestions1 = get_place_suggestions(location1_input)
-    if suggestions1:
-        location1 = suggestions1[0][1]  # Get place_id from first suggestion
-        st.caption(f"Selected: {suggestions1[0][0]}")
+    selected_value = st_searchbox(
+    get_place_suggestions,
+    placeholder="Enter first location:",
+    key="loc1_input")
+    location1 = selected_value
 
 with col2:
-    location2_input = st.text_input("Enter second location:", key="loc2_input")
-    location2 = None
-    suggestions2 = get_place_suggestions(location2_input)
-    if suggestions2:
-        location2 = suggestions2[0][1]  # Get place_id from first suggestion
-        st.caption(f"Selected: {suggestions2[0][0]}")
+    selected_value = st_searchbox(
+    get_place_suggestions,
+    placeholder="Enter second location:",
+    key="loc2_input")
+    location2 = selected_value
 
 with col3:
-    search_type = st.text_input("What are you looking for?")
+    search_type = st.text_input(
+        label='doom',
+        placeholder="What are you looking for?",
+        label_visibility="hidden",
+        key='search_type'
+    )
 
-if st.button("Search Places") and location1 and location2:
+# Check for Enter press or button click and valid inputs
+if (st.button("Search Places") or search_type) and location1 and location2 and len(search_type) >= 3:
     coords1 = get_location_coordinates(location1)
     coords2 = get_location_coordinates(location2)
     
