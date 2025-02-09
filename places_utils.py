@@ -29,9 +29,13 @@ def get_walking_time(place, dest, api_key, mode="walking"):
     if response.status_code == 200:
         data = response.json()
         if data['status'] == 'OK':
-            times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
-            return sum(times)
+            try:
+                times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
+                return sum(times)
+            except:
+                return float('inf')
     return float('inf')
+
 
 def get_walking_times(place1, place2, dest, api_key, mode="walking"):
     walking_times = []
