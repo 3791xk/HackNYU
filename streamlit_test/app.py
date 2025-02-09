@@ -103,8 +103,10 @@ with col3:
         key='search_type'
     )
 
-# Check for Enter press or button click and valid inputs
-if (st.button("Search Places") or search_type) and location1 and location2 and len(search_type) >= 3:
+search_clicked = st.button("Search Places")
+
+# Only search on button click and when inputs are valid
+if search_clicked and location1 and location2 and len(search_type) >= 3:
     coords1 = get_location_coordinates(location1)
     coords2 = get_location_coordinates(location2)
     
@@ -113,7 +115,7 @@ if (st.button("Search Places") or search_type) and location1 and location2 and l
         lat2, lng2 = coords2
         mid_lat, mid_lng = find_midpoint(lat1, lng1, lat2, lng2)
         places = search_places(mid_lat, mid_lng, search_type)
-        
+        #print(len(places))
         st.subheader(f"Nearby {search_type.title()} Places")
         for place in places[:10]:
             name = place.get('name', 'Unknown')
