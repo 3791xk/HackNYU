@@ -1,4 +1,3 @@
-import math
 import requests
 
 def get_location_coordinates(place_id, api_key):
