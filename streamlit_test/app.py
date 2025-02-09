@@ -47,7 +47,7 @@ st.set_page_config(
 # Add logo and title in a horizontal layout
 col1, col2 = st.columns([1, 9])
 with col1:
-    st.image("assets/MapTogetherLogoDesign.svg", width=150)
+    st.image("assets/LogoDesign.png", width=150)
 with col2:
     st.title("MapTogether")
     st.markdown("Search for spots a convenient distance from both you and your friends")
