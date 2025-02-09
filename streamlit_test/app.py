@@ -26,7 +26,7 @@ if 'location2' not in st.session_state:
 
 # Add travel_mode to session state initialization
 if 'travel_mode' not in st.session_state:
-    st.session_state.travel_mode = "walking"
+    st.session_state.travel_mode = "Walking"
 
 def update_location(number, value):
     suggestions = get_place_suggestions(value)
@@ -82,10 +82,10 @@ with col3:
     # Update travel_mode in session state when changed
     travel_mode = st.selectbox(
         "Travel mode:",
-        options=["walking", "driving"],
+        options=["Walking", "Driving"],
         key="travel_mode",
         on_change=lambda: st.session_state.update({'show_results': False}),  # Reset results when mode changes
-    )
+    ).lower()  # Convert to lowercase for API calls
 
 search_clicked = st.button("Search Places")
 
