@@ -159,3 +159,5 @@ app.*.symbols
 .gclient_previous_custom_vars
 .gclient_previous_sync_commits
 streamlit_test/.env
+
+*.env
