@@ -40,7 +40,7 @@ def update_location(number, value):
 
 # Set page config
 st.set_page_config(
-    page_title="MeetTogether",
+    page_title="MapTogether",
     layout="wide"
 )
 
@@ -49,7 +49,7 @@ col1, col2 = st.columns([1, 4])
 with col1:
     st.image("assets/MapTogetherLogoDesign.svg", width=100)
 with col2:
-    st.title("Find Places Between Locations")
+    st.title("MapTogether")
     st.markdown("Explore places and get directions from both starting points")
 
 
@@ -98,12 +98,21 @@ if search_clicked and location1 and location2 and len(search_type) >= 3:
         lat1, lng1 = coords1
         lat2, lng2 = coords2
         mid_lat, mid_lng = find_midpoint(lat1, lng1, lat2, lng2)
-        places = search_places(mid_lat, mid_lng, search_type,GOOGLE_MAPS_API_KEY)[:10] + search_places(lat1, lng1, search_type,GOOGLE_MAPS_API_KEY)[:10] + search_places(lat2, lng2, search_type,GOOGLE_MAPS_API_KEY)[:10]
+        places = search_places(mid_lat, mid_lng, search_type,GOOGLE_MAPS_API_KEY) + search_places(lat1, lng1, search_type,GOOGLE_MAPS_API_KEY)[:7] + search_places(lat2, lng2, search_type,GOOGLE_MAPS_API_KEY)[:7]
         if places:
             places_sorted = sort_places(location1, location2, places, GOOGLE_MAPS_API_KEY, mode=travel_mode)
+            places_dict = {place[0]['place_id']: place[0] for place in places_sorted}
+            more_places = [search_places(place[0]['geometry']['location']['lat'], place[0]['geometry']['location']['lng'], search_type, GOOGLE_MAPS_API_KEY)[0:5] for place in places_sorted]
+            og_places = list(places_dict.values())
+            for place in og_places:
+                for p in search_places(place['geometry']['location']['lat'], place['geometry']['location']['lng'], search_type, GOOGLE_MAPS_API_KEY)[0:5]:
+                    if p['place_id'] not in places_dict:
+                        places_dict[p['place_id']] = p
+            more_places = list(places_dict.values())
+            more_places_sorted = sort_places(location1, location2, more_places, GOOGLE_MAPS_API_KEY, mode=travel_mode)
             st.session_state.places_data = {
                 f"{p[0].get('name', 'Unknown')} - {p[0].get('rating', 'No rating')}/5 (Total {travel_mode} time: {p[1]:.0f} mins)": 
-                (p[0], p[1]) for p in places_sorted
+                (p[0], p[1]) for p in more_places_sorted
             }
             st.session_state.coordinates = (lat1, lng1, lat2, lng2)
             st.session_state.show_results = True

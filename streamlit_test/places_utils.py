@@ -65,11 +65,13 @@ def sort_places(location1, location2, places, api_key, mode="walking"):
             api_key, 
             mode=mode)
     ) for place in places]
-    places_with_distance = filter_places(places_with_distance)
-    sorted_places_with_distance = sorted(places_with_distance, key=lambda x: x[1])[:10]
+    filtered_places = filter_places(places_with_distance)
+    if len(filtered_places) == 0:
+        return sorted(places_with_distance, key=lambda x: x[1])[:5]
+    sorted_places_with_distance = sorted(filtered_places, key=lambda x: x[1])[:10]
     return sorted_places_with_distance
 
 def filter_places(places_with_distance):
     disparity = lambda x: abs(x[2][0] - x[2][1])
     percent_of_total = lambda x: x[2][0] / sum(x[2])
-    return [place for place in places_with_distance if disparity(place) > 20 and percent_of_total(place) > 0.3 and percent_of_total(place) < 0.7]
+    return [place for place in places_with_distance if disparity(place) < 20 or (percent_of_total(place) > 0.3 and percent_of_total(place) < 0.7) ]
