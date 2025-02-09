@@ -1,12 +1,11 @@
-## Inspiration
+## What is MapTogether?
+Want to have lunch with your friend but don't know where to go? Want to search for places that will mean less travel time for both of you? MapTogether allows you to search for spots you'll both have time to reach while minimizing fuel emissions! Search for scenic parks and cozy coffeeshops for well deserved mental health breaks! Enjoy exploring nature and adventuring down trails while catching up with the people who matter most!
+
+## Problem Statement
 We wanted a better way to search for locations between two people. With traditional maps applications you need to decide on where you want to meet before you can search and figure out where to go. This leads to longer walks/drives for both parties because you don't have a good sense of what's in the middle. Our goal was to solve this problem - helping users to find convenient and eco-friendly meet-up spots almost directly between their respective locations.
 
-## What it does
-Our website lets users input two locations as well as the kind of activity or place they want to meet at. Then, it gives a dropdown of recommended locations. Once the user picks one, it will show a map of both of their routes there as well as links to google maps routes from both starting locations.
-
-
-## How we built it
-We settled on Streamlit for our frontend and wrote python code for the backend. We interfaced with the google maps api to search for route locations and further refined the results through our algorithm. We prioritized having comparitively equal commutes as well as a short total travel time.
+## Technology
+We settled on Streamlit for our frontend and wrote Python code for the backend. We interfaced with the Google Maps API to search for route locations and further refined the results through our algorithm. We prioritized having comparitively equal commutes as well as a short total travel time.
 
 ## Challenges we ran into
 We ran into initial issues deciding on a development environment as we did not know whether we wanted to build a mobile applications or webapp. We explored a couple of different approaches to creating our application (react-native, flutter) and ended up settling on Streamlit. By focusing on creating a website with a good mobile UI, we could give users the option of using our project on phone or computer with minimal overhead.
