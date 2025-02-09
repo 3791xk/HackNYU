@@ -24,6 +24,10 @@ if 'location1' not in st.session_state:
 if 'location2' not in st.session_state:
     st.session_state.location2 = {'input': '', 'place_id': None, 'description': ''}
 
+# Add travel_mode to session state initialization
+if 'travel_mode' not in st.session_state:
+    st.session_state.travel_mode = "walking"
+
 def update_location(number, value):
     suggestions = get_place_suggestions(value)
     if suggestions:
@@ -74,6 +78,14 @@ with col3:
         label_visibility="hidden",
         key='search_type'
     )
+    
+    # Update travel_mode in session state when changed
+    travel_mode = st.selectbox(
+        "Travel mode:",
+        options=["walking", "driving"],
+        key="travel_mode",
+        on_change=lambda: st.session_state.update({'show_results': False}),  # Reset results when mode changes
+    )
 
 search_clicked = st.button("Search Places")
 
@@ -86,11 +98,11 @@ if search_clicked and location1 and location2 and len(search_type) >= 3:
         lat1, lng1 = coords1
         lat2, lng2 = coords2
         mid_lat, mid_lng = find_midpoint(lat1, lng1, lat2, lng2)
-        places = search_places(mid_lat, mid_lng, search_type,GOOGLE_MAPS_API_KEY) + search_places(lat1, lng1, search_type,GOOGLE_MAPS_API_KEY) + search_places(lat2, lng2, search_type,GOOGLE_MAPS_API_KEY)
+        places = search_places(mid_lat, mid_lng, search_type,GOOGLE_MAPS_API_KEY)[:10] + search_places(lat1, lng1, search_type,GOOGLE_MAPS_API_KEY)[:10] + search_places(lat2, lng2, search_type,GOOGLE_MAPS_API_KEY)[:10]
         if places:
-            places_sorted = sort_places(location1,location2,places,GOOGLE_MAPS_API_KEY)
+            places_sorted = sort_places(location1, location2, places, GOOGLE_MAPS_API_KEY, mode=travel_mode)
             st.session_state.places_data = {
-                f"{p[0].get('name', 'Unknown')} - {p[0].get('rating', 'No rating')}/5 (Total walking time: {p[1]:.0f} mins)": 
+                f"{p[0].get('name', 'Unknown')} - {p[0].get('rating', 'No rating')}/5 (Total {travel_mode} time: {p[1]:.0f} mins)": 
                 (p[0], p[1]) for p in places_sorted
             }
             st.session_state.coordinates = (lat1, lng1, lat2, lng2)
@@ -116,30 +128,32 @@ if st.session_state.get('show_results', False):
         place_lng = selected_place['geometry']['location']['lng']
         lat1, lng1, lat2, lng2 = st.session_state.coordinates
         
-        st.info(f"Total walking time: {selected_distance:.0f} minutes")
+        st.info(f"Total {travel_mode} time: {selected_distance:.0f} minutes")
         
         # Create Google Maps links
         route1_url = get_gmaps_url(location1,selected_place['place_id'])
         route2_url = get_gmaps_url(location2,selected_place['place_id'])
         
-
-
-        # Display map with routes
+        # Update the map and links to use selected mode
         map_html = f"""
         <iframe width="100%" height="400" frameborder="0" style="border:0"
         src="https://www.google.com/maps/embed/v1/directions?key={GOOGLE_MAPS_API_KEY}
         &origin={lat1},{lng1}
         &destination={lat2},{lng2}
         &waypoints={place_lat},{place_lng}
-        &mode=walking">
+        &mode={travel_mode}">
         </iframe>
         """
         st.components.v1.html(map_html, height=400)
+        
+        # Pass mode to the walking time functions
+        time1 = get_walking_time(location1, selected_place['place_id'], GOOGLE_MAPS_API_KEY, mode=travel_mode)
+        time2 = get_walking_time(location2, selected_place['place_id'], GOOGLE_MAPS_API_KEY, mode=travel_mode)
         
         # Display travel info with direct links
         st.markdown(f"""
         **Address:** {selected_place.get('vicinity', 'No address')}  
         **Routes:**
-        * [Directions from Location 1]({route1_url}) ({get_walking_time(location1,selected_place['place_id'],GOOGLE_MAPS_API_KEY):.0f} mins)
-        * [Directions from Location 2]({route2_url}) ({get_walking_time(location2,selected_place['place_id'],GOOGLE_MAPS_API_KEY):.0f} mins)
+        * [Directions from Location 1]({route1_url}) ({time1:.0f} mins)
+        * [Directions from Location 2]({route2_url}) ({time2:.0f} mins)
         """)

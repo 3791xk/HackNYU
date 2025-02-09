@@ -23,20 +23,8 @@ def search_places(lat, lng, query, api_key):
 def get_gmaps_url(place, dest):
     return f"https://www.google.com/maps/dir/?api=1&origin=place_id:{place}&destination=place_id{dest}"
 
-def get_walking_times(place1, place2, dest, api_key):
-    total = 0
-    for place in [place1, place2]:
-        url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:{place}&destinations=place_id:{dest}&mode=walking&key={api_key}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            if data['status'] == 'OK':
-                times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
-                total += sum(times)
-    return total if total > 0 else float('inf')
-
-def get_walking_time(place, dest, api_key):
-    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:{place}&destinations=place_id:{dest}&mode=walking&key={api_key}"
+def get_walking_time(place, dest, api_key, mode="walking"):
+    url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:{place}&destinations=place_id:{dest}&mode={mode}&key={api_key}"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
@@ -45,16 +33,31 @@ def get_walking_time(place, dest, api_key):
             return sum(times)
     return float('inf')
 
-def calculate_total_distance(place1, place2, dest, api_key):
-    return get_walking_times(place1, place2, dest, api_key) 
+def get_walking_times(place1, place2, dest, api_key, mode="walking"):
+    total = 0
+    for place in [place1, place2]:
+        url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:{place}&destinations=place_id:{dest}&mode={mode}&key={api_key}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            if data['status'] == 'OK':
+                times = [element['duration']['value'] / 60 for element in data['rows'][0]['elements']]
+                total += sum(times)
+    return total if total > 0 else float('inf')
 
-def sort_places(location1, location2, places, api_key):
+def calculate_total_distance(place1, place2, dest, api_key, mode="walking"):
+    return get_walking_times(place1, place2, dest, api_key, mode=mode)
+
+def sort_places(location1, location2, places, api_key, mode="walking"):
     # Sort places by total distance and calculate distances
     places_with_distance = [(
         place,
         calculate_total_distance(
-        location1, location2,
-        place['place_id'], api_key)
+            location1, location2,
+            place['place_id'], 
+            api_key,
+            mode=mode
+        )
     ) for place in places]
     sorted_places_with_distance = sorted(places_with_distance, key=lambda x: x[1])[:10]
     return sorted_places_with_distance
