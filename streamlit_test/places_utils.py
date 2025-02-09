@@ -15,14 +15,14 @@ def find_midpoint(lat1, lng1, lat2, lng2):
     return (lat1 + lat2) / 2, (lng1 + lng2) / 2
 
 def search_places(lat, lng, query, api_key):
-    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&radius=10000&keyword={query}&key={api_key}"
+    url = f"https://maps.googleapis.com/maps/api/place/nearbysearch/json?location={lat},{lng}&keyword={query}&key={api_key}&rankby=distance"
     response = requests.get(url)
     if response.status_code == 200:
         return response.json().get('results', [])
     return []
 
-def get_gmaps_url(place, dest):
-    return f"https://www.google.com/maps/dir/?api=1&origin=place_id:{place}&destination=place_id{dest}"
+def get_gmaps_url(lat1,lng1,lat2,lng2):
+    return f"https://www.google.com/maps/dir/?api=1&origin={lat1},{lng1}&destination={lat2},{lng2}"
 
 def get_walking_time(place, dest, api_key, mode="walking"):
     url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins=place_id:{place}&destinations=place_id:{dest}&mode={mode}&key={api_key}"

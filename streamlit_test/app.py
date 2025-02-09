@@ -140,8 +140,8 @@ if st.session_state.get('show_results', False):
         st.info(f"Total {travel_mode} time: {selected_distance:.0f} minutes")
         
         # Create Google Maps links
-        route1_url = get_gmaps_url(location1,selected_place['place_id'])
-        route2_url = get_gmaps_url(location2,selected_place['place_id'])
+        route1_url = get_gmaps_url(lat1,lng1,place_lat,place_lng)
+        route2_url = get_gmaps_url(lat2,lng2,place_lat,place_lng)
         
         # Update the map and links to use selected mode
         map_html = f"""
